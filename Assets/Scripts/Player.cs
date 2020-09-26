@@ -23,7 +23,10 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject laserPrefab;
     [SerializeField] private GameObject tripleShotPrefab = default;
     [SerializeField] private int playerLives = 3;
-    [Header("Player Info")]
+
+    [Header("Player Info")] 
+    [SerializeField] private float baseSpeed = 1f;
+    [SerializeField] private float boostSpeed = 20f;
     [SerializeField] private float playerSpeed = 1f;
     [SerializeField] private float firingRate = 0.5f;
     [SerializeField] private GameObject leftThruster;
@@ -76,7 +79,8 @@ public class Player : MonoBehaviour
 
     void PlayerMovement()
     {
-        
+       IsBoostActive();
+
         //Player movement and speed
         float horizontalInput = Input.GetAxis("Horizontal");
         float verticalInput = Input.GetAxis("Vertical");
@@ -178,5 +182,18 @@ public class Player : MonoBehaviour
     {
         return _score;
     }
+
+    private void IsBoostActive()
+    {
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            playerSpeed = boostSpeed;
+        }
+        if (!Input.GetKey(KeyCode.LeftShift))
+        {
+            playerSpeed = baseSpeed;
+        }
+    }
 }
+
 

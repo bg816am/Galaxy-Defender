@@ -16,10 +16,11 @@ public class Player : MonoBehaviour
     //PowerUp Toggles
     private bool _shieldsActive = false;
     private bool _tripleShotOn = false;
-    
-    [Header("PowerUps")]
+
+    [Header("PowerUps")] 
+    [SerializeField] private int shieldHp = 0;
     [SerializeField] private float powerUpDuration = 5f;
-    [FormerlySerializedAs("shields")] [SerializeField] private GameObject shieldsPrefab;
+    [FormerlySerializedAs("shields")] [SerializeField] private GameObject[] shieldsPrefab;
     [SerializeField] private GameObject laserPrefab;
     [SerializeField] private GameObject tripleShotPrefab = default;
     [SerializeField] private int playerLives = 3;
@@ -119,34 +120,56 @@ public class Player : MonoBehaviour
     {
         if (_shieldsActive == true)
         {
-            _shieldsActive = false;
-            shieldsPrefab.SetActive(false);
-            return;
+            shieldHp--;
+            if (shieldHp == 2)
+            {
+                shieldsPrefab[0].SetActive(false);
+                shieldsPrefab[1].SetActive(true);
+                return;
+            } else if (shieldHp == 1)
+            {
+                shieldsPrefab[1].SetActive(false);
+                shieldsPrefab[2].SetActive(true);
+                return;
+            }
+            else
+            {
+                _shieldsActive = false;
+                shieldsPrefab[2].SetActive(false);
+                return;
+            }
+           
         }
 
-        playerLives -= 1;
-        if (playerLives == 2)
+        if (_shieldsActive == false)
         {
-            leftThruster.SetActive(true);
-        }
-        if (playerLives == 1)
-        {
-            rightThruster.SetActive(true);
-        }
-        
-        //if lives is one, other thruster
-        _uiManager.UpdateLives(playerLives);
-        if (playerLives < 1)
-        {
-            mainThruster.SetActive(false);
-            leftThruster.SetActive(false);
-            rightThruster.SetActive(false);
-            _playerExplosion.SetTrigger("OnEnemyDeath");
-            _uiManager.GameOver();
-            _spawnManager.OnPlayerDeath();
-            Destroy(gameObject, 2.8f);
+
+            playerLives -= 1;
+            if (playerLives == 2)
+            {
+                leftThruster.SetActive(true);
+            }
+
+            if (playerLives == 1)
+            {
+                rightThruster.SetActive(true);
+            }
+
+            //if lives is one, other thruster
+            _uiManager.UpdateLives(playerLives);
+            if (playerLives < 1)
+            {
+                mainThruster.SetActive(false);
+                leftThruster.SetActive(false);
+                rightThruster.SetActive(false);
+                _playerExplosion.SetTrigger("OnEnemyDeath");
+                _uiManager.GameOver();
+                _spawnManager.OnPlayerDeath();
+                Destroy(gameObject, 2.8f);
+            }
         }
     }
+        
 
     public void SpeedBoostActive()
     {
@@ -162,9 +185,11 @@ public class Player : MonoBehaviour
     
     public void ActivateShields()
     {
+        shieldHp = 3;
         _shieldsActive = true;
-        shieldsPrefab.SetActive(true);
-        StartCoroutine(PowerUpCooldown());
+        shieldsPrefab[0].SetActive(true);
+        shieldsPrefab[1].SetActive(false);
+        shieldsPrefab[2].SetActive(false);
     }
     IEnumerator PowerUpCooldown()
     {

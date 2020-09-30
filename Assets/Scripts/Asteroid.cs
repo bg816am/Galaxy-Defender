@@ -4,9 +4,9 @@ public class Asteroid : MonoBehaviour
 {
     private AudioSource _explosionSound = default;
     [SerializeField] private float destroyDelay = 0.25f;
-    [SerializeField] private GameObject explosion;
+    [SerializeField] private GameObject explosion = default;
     [SerializeField] private float rotationSpeed = 3f;
-    private SpawnManager _spawnManager;
+    private SpawnManager _spawnManager = default;
 
     private void Start()
     {

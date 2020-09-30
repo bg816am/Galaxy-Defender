@@ -5,7 +5,7 @@ public class PowerUp : MonoBehaviour
     [SerializeField] private float floatSpeed = 3f;
     private float _screenBottom = -5.5f;
     private AudioSource _powerUpSound = default;
-    [SerializeField] private int powerUpID;
+    [SerializeField] private int powerUpID = default;
     //0 is tripleshot
     //1 is speed boost
     //2 is shield

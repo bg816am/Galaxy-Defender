@@ -5,8 +5,7 @@ public class Enemy : MonoBehaviour
 {
     private float _fireRate = 3.0f;
     private float _canFire = -1.0f;
-    [SerializeField] private float enemyShotDelay = .5f;
-    [SerializeField] GameObject laserPrefab;
+    [SerializeField] GameObject laserPrefab = default;
     private AudioSource _explosionSound = default;
     private Animator _anim = default;
     [SerializeField] private int pointValue = 10;

@@ -1,5 +1,4 @@
-﻿
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,12 +6,13 @@ public class UIManager : MonoBehaviour
 {
     private GameManager _gameManager;
     private Player _player;
-    [SerializeField] private Text restartText;
+    [SerializeField] private Text ammoCount = default;
+    [SerializeField] private Text restartText = default;
     [SerializeField] private float flickerTime = 0.05f;
-    [SerializeField] private Text gameOverText;
-    [SerializeField] private Image livesImage;
-    [SerializeField] Text scoreText;
-    [SerializeField] private Sprite[] livesSprites;
+    [SerializeField] private Text gameOverText = default;
+    [SerializeField] private Image livesImage = default;
+    [SerializeField] Text scoreText = default;
+    [SerializeField] private Sprite[] livesSprites = null;
     void Start()
     {
         restartText.gameObject.SetActive(false);
@@ -30,6 +30,7 @@ public class UIManager : MonoBehaviour
     void Update()
     {
         scoreText.text = "Score: " + _player.GetScore();
+        ammoCount.text = "Ammo: " + _player.GetAmmoCount();
     }
 
     public void UpdateLives(int currentLives)

@@ -5,6 +5,7 @@ using UnityEngine.Serialization;
 
 public class Player : MonoBehaviour
 {
+    private AudioSource _noAmmo = default;
     private Animator _playerExplosion = default;
     private AudioSource _audioSource = default;
     //Components
@@ -20,19 +21,20 @@ public class Player : MonoBehaviour
     [Header("PowerUps")] 
     [SerializeField] private int shieldHp = 0;
     [SerializeField] private float powerUpDuration = 5f;
-    [FormerlySerializedAs("shields")] [SerializeField] private GameObject[] shieldsPrefab;
-    [SerializeField] private GameObject laserPrefab;
+    [FormerlySerializedAs("shields")] [SerializeField] private GameObject[] shieldsPrefab = default;
+    [SerializeField] private GameObject laserPrefab = default;
     [SerializeField] private GameObject tripleShotPrefab = default;
     [SerializeField] private int playerLives = 3;
 
     [Header("Player Info")] 
+    [SerializeField] private int playerAmmo = 15;
     [SerializeField] private float baseSpeed = 1f;
     [SerializeField] private float boostSpeed = 20f;
     [SerializeField] private float playerSpeed = 1f;
     [SerializeField] private float firingRate = 0.5f;
-    [SerializeField] private GameObject leftThruster;
-    [SerializeField] private GameObject rightThruster;
-    [SerializeField] private GameObject mainThruster;
+    [SerializeField] private GameObject leftThruster = default;
+    [SerializeField] private GameObject rightThruster = default;
+    [SerializeField] private GameObject mainThruster = default;
     //Movement Limits
     private float topLimit = 0f;
     private float bottomLimit = -3.8f;
@@ -44,13 +46,17 @@ public class Player : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _noAmmo = GameObject.Find("OutOfAmmo").GetComponent<AudioSource>();
         _playerExplosion = GetComponent<Animator>();
         _audioSource = GameObject.Find("AudioManager").GetComponent<AudioSource>();
         leftThruster.SetActive(false);
         rightThruster.SetActive(false);
         _uiManager = GameObject.FindObjectOfType<UIManager>();
         _spawnManager = GameObject.Find("Spawn Manager").GetComponent<SpawnManager>();
-        
+        if (_noAmmo == null)
+        {
+            Debug.LogError("Ammo sound is null");
+        }
         if (_audioSource == null)
         {
             Debug.LogError("Laser sound is null");
@@ -103,17 +109,31 @@ public class Player : MonoBehaviour
 
     void FireLaser()
     {
-        Vector3 shotOffset = new Vector3(0, _projectileOffset, 0);
-        _canFire = Time.time + firingRate;
-        if (_tripleShotOn == true)
+        if (playerAmmo > 0)
         {
-            Instantiate(tripleShotPrefab, transform.position, Quaternion.identity);
+            Vector3 shotOffset = new Vector3(0, _projectileOffset, 0);
+            _canFire = Time.time + firingRate;
+            if (_tripleShotOn == true)
+            {
+                Instantiate(tripleShotPrefab, transform.position, Quaternion.identity);
+            }
+            else
+            {
+                Instantiate(laserPrefab, (transform.position + shotOffset), Quaternion.identity); 
+            } 
+            playerAmmo--;
+            _audioSource.Play();
         }
         else
         {
-            Instantiate(laserPrefab, (transform.position + shotOffset), Quaternion.identity); 
+            _noAmmo.Play();
         }
-        _audioSource.Play();
+
+    }
+
+    public int GetAmmoCount()
+    {
+        return playerAmmo;
     }
 
     public void Damage()
@@ -173,7 +193,7 @@ public class Player : MonoBehaviour
 
     public void SpeedBoostActive()
     {
-        playerSpeed = 25;
+        baseSpeed = 25;
         StartCoroutine(PowerUpCooldown());
     }
 
@@ -195,7 +215,7 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(powerUpDuration);
         _tripleShotOn = false;
-        playerSpeed = 10f;
+        baseSpeed = 10f;
     }
 
     public void AddToScore(int pointsPerEnemy)
@@ -210,7 +230,7 @@ public class Player : MonoBehaviour
 
     private void IsBoostActive()
     {
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetKey(KeyCode.LeftShift) && shieldHp == 0)
         {
             playerSpeed = boostSpeed;
         }

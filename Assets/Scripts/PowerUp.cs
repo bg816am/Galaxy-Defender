@@ -9,6 +9,7 @@ public class PowerUp : MonoBehaviour
     //0 is tripleshot
     //1 is speed boost
     //2 is shield
+    //3 is more ammo
     private void Start()
     {
         _powerUpSound = GameObject.Find("PowerUpSound").GetComponent<AudioSource>();
@@ -48,6 +49,9 @@ public class PowerUp : MonoBehaviour
                         break;
                     case 2:
                         player.ActivateShields();
+                        break;
+                    case 3:
+                        player.AddAmmo();
                         break;
                     default:
                         Debug.Log("Invalid PowerUp");

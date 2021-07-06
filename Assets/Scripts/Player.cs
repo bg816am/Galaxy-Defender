@@ -211,6 +211,11 @@ public class Player : MonoBehaviour
         shieldsPrefab[1].SetActive(false);
         shieldsPrefab[2].SetActive(false);
     }
+
+    public void AddAmmo()
+    {
+        playerAmmo = 15;
+    }
     IEnumerator PowerUpCooldown()
     {
         yield return new WaitForSeconds(powerUpDuration);
